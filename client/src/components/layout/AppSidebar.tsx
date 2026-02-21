@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
   LogOut,
+  DollarSign,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { key: "drivers", label: "Drivers", icon: Users, path: "/drivers" },
   { key: "safety", label: "Safety", icon: Shield, path: "/safety" },
   { key: "analytics", label: "Analytics", icon: BarChart3, path: "/analytics" },
+  { key: "finance", label: "Finance", icon: DollarSign, path: "/finance" },
 ];
 
 export default function AppSidebar() {

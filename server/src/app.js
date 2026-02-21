@@ -8,10 +8,12 @@ const tripRoutes = require('./modules/trips/trip.routes');
 const maintenanceRoutes = require('./modules/maintenance/maintenance.routes');
 const fuelRoutes = require('./modules/fuel/fuel.routes');
 const analyticsRoutes = require('./modules/analytics/analytics.routes');
+const financeRoutes = require('./modules/finance/finance.routes');
 const dispatcherRoutes = require('./modules/dispatcher/dispatcher.routes');
 const managerRoutes = require('./modules/manager/manager.routes');
 const dispatchRoutes = require('./modules/dispatch/dispatch.routes');
 const safetyRoutes = require('./modules/safety/safety.routes');
+
 
 const app = express();
 
@@ -35,6 +37,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/fuel', fuelRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/finance', financeRoutes);
 app.use('/api/dispatcher', dispatcherRoutes);
 app.use('/api/manager', managerRoutes);
 app.use('/api/dispatch', dispatchRoutes);

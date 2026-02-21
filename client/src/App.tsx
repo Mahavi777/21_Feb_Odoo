@@ -16,6 +16,7 @@ import SafetyDashboard from "@/features/safety/SafetyDashboard";
 import SafetyDrivers from "@/features/safety/Drivers";
 import Incidents from "@/features/safety/Incidents";
 import Analytics from "@/pages/Analytics";
+import FinanceDashboard from "@/pages/FinanceDashboard";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,14 @@ const App = () => (
                 <Route path="/safety/drivers" element={<SafetyDrivers />} />
                 <Route path="/safety/incidents" element={<Incidents />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route
+                  path="/finance"
+                  element={
+                    <ProtectedRoute requiredRole="finance">
+                      <FinanceDashboard />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
