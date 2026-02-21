@@ -1,7 +1,10 @@
 import { useState, useCallback, useEffect } from 'react';
 import { managerApi } from '../services/managerApi';
 
-export const useManagerData = () => {
+  import { useQueryClient } from '@tanstack/react-query';
+
+  export const useManagerData = () => {
+  const queryClient = useQueryClient();
   const [dashboardMetrics, setDashboardMetrics] = useState<any>(null);
   const [analytics, setAnalytics] = useState<any>(null);
   const [vehicles, setVehicles] = useState<any[]>([]);
@@ -51,6 +54,7 @@ export const useManagerData = () => {
   const createVehicle = async (data: any) => {
     await managerApi.createVehicle(data);
     await refetch();
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
   };
 
   const updateVehicle = async (id: string, data: any) => {
@@ -61,6 +65,7 @@ export const useManagerData = () => {
   const retireVehicle = async (id: string) => {
     await managerApi.retireVehicle(id);
     await refetch();
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
   };
 
   const createDriver = async (data: any) => {
@@ -76,11 +81,13 @@ export const useManagerData = () => {
   const createMaintenance = async (data: any) => {
     await managerApi.createMaintenance(data);
     await refetch();
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
   };
 
   const completeMaintenance = async (id: string) => {
     await managerApi.completeMaintenance(id);
     await refetch();
+    queryClient.invalidateQueries({ queryKey: ['analytics'] });
   };
 
   const cancelTrip = async (id: string) => {

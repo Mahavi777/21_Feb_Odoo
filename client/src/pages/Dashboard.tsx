@@ -2,7 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import DispatcherDashboard from "@/features/dispatcher/DispatcherDashboard";
 import ManagerDashboard from "@/features/manager/ManagerDashboard";
 import SafetyDashboard from "@/features/safety/SafetyDashboard";
-import FinanceDashboard from "@/features/finance/FinanceDashboard";
+import FinanceDashboard from "@/pages/FinanceDashboard";
 
 export default function Dashboard() {
   const { user } = useAuth();

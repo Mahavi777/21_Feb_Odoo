@@ -1,6 +1,8 @@
+const mongoose = require("mongoose");
 const Trip = require("./trip.model");
 const Vehicle = require("../vehicles/vehicle.model");
 const User = require("../users/user.model");
+const Fuel = require("../fuel/fuel.model");
 
 // Create trip (with validation)
 exports.createTrip = async (req, res) => {
@@ -16,19 +18,15 @@ exports.createTrip = async (req, res) => {
 
     // Block assignment if driver's complianceStatus is not Active
     if (driver.complianceStatus && driver.complianceStatus !== "Active") {
-      return res
-        .status(403)
-        .json({
-          message: `Cannot assign trip. Driver compliance status: ${driver.complianceStatus}.`,
-        });
+      return res.status(403).json({
+        message: `Cannot assign trip. Driver compliance status: ${driver.complianceStatus}.`,
+      });
     }
 
     if (driver.status !== "offDuty") {
-      return res
-        .status(403)
-        .json({
-          message: "Cannot assign trip. Driver is currently not off-duty.",
-        });
+      return res.status(403).json({
+        message: "Cannot assign trip. Driver is currently not off-duty.",
+      });
     }
 
     // Block if license expired
@@ -148,22 +146,26 @@ exports.dispatchTrip = async (req, res) => {
     }
 
     // Update vehicle status to onTrip
-    await Vehicle.findByIdAndUpdate(
-      trip.vehicleId,
-      { status: "onTrip", updatedAt: Date.now() },
-      { new: true },
-    );
+    if (trip.vehicleId) {
+      await Vehicle.findByIdAndUpdate(
+        trip.vehicleId,
+        { status: "onTrip", updatedAt: Date.now() },
+        { new: true },
+      );
+    }
 
     trip.status = "dispatched";
     trip.updatedAt = Date.now();
     await trip.save();
 
     // Update driver to onDuty
-    await User.findByIdAndUpdate(trip.driverId, {
-      status: "onDuty",
-      assignedVehicle: trip.vehicleId,
-      updatedAt: Date.now(),
-    });
+    if (trip.driverId) {
+      await User.findByIdAndUpdate(trip.driverId, {
+        status: "onDuty",
+        assignedVehicle: trip.vehicleId,
+        updatedAt: Date.now(),
+      });
+    }
 
     res.json({
       message: "Trip dispatched successfully",
@@ -178,16 +180,23 @@ exports.dispatchTrip = async (req, res) => {
 
 // Complete trip
 exports.completeTrip = async (req, res) => {
-  try {
-    const { endOdometer } = req.body;
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-    const trip = await Trip.findById(req.params.id);
+  try {
+    const { endOdometer, fuelLiters, fuelCost } = req.body;
+
+    const trip = await Trip.findById(req.params.id).session(session);
 
     if (!trip) {
+      await session.abortTransaction();
+      session.endSession();
       return res.status(404).json({ message: "Trip not found" });
     }
 
     if (trip.status !== "dispatched") {
+      await session.abortTransaction();
+      session.endSession();
       return res
         .status(400)
         .json({ message: "Only dispatched trips can be completed" });
@@ -197,27 +206,53 @@ exports.completeTrip = async (req, res) => {
     trip.status = "completed";
     trip.endOdometer = endOdometer;
     trip.updatedAt = Date.now();
-    await trip.save();
+    await trip.save({ session });
 
     // Update vehicle status to available
-    await Vehicle.findByIdAndUpdate(
-      trip.vehicleId,
-      { status: "available", odometer: endOdometer, updatedAt: Date.now() },
-      { new: true },
-    );
+    if (trip.vehicleId) {
+      await Vehicle.findByIdAndUpdate(
+        trip.vehicleId,
+        { status: "available", odometer: endOdometer, updatedAt: Date.now() },
+        { new: true, session },
+      );
+    }
 
     // Update driver to offDuty
-    await User.findByIdAndUpdate(trip.driverId, {
-      status: "offDuty",
-      assignedVehicle: null,
-      updatedAt: Date.now(),
-    });
+    if (trip.driverId) {
+      await User.findByIdAndUpdate(
+        trip.driverId,
+        {
+          status: "offDuty",
+          assignedVehicle: null,
+          updatedAt: Date.now(),
+        },
+        { session },
+      );
+    }
+
+    // Process Fuel Log Atomically if provided
+    if (fuelLiters && fuelCost) {
+      const fuelRecord = new Fuel({
+        vehicleId: trip.vehicleId,
+        tripId: trip._id,
+        driverId: trip.driverId,
+        liters: Number(fuelLiters),
+        cost: Number(fuelCost),
+        date: new Date(),
+      });
+      await fuelRecord.save({ session });
+    }
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.json({
-      message: "Trip completed successfully",
+      message: "Trip and fuel logged successfully",
       data: trip,
     });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
     res
       .status(500)
       .json({ message: "Error completing trip", error: error.message });
@@ -238,7 +273,7 @@ exports.cancelTrip = async (req, res) => {
     }
 
     // If trip was dispatched, reset vehicle status
-    if (trip.status === "dispatched") {
+    if (trip.status === "dispatched" && trip.vehicleId) {
       await Vehicle.findByIdAndUpdate(
         trip.vehicleId,
         { status: "available", updatedAt: Date.now() },
@@ -251,11 +286,13 @@ exports.cancelTrip = async (req, res) => {
     await trip.save();
 
     // Update driver to offDuty
-    await User.findByIdAndUpdate(trip.driverId, {
-      status: "offDuty",
-      assignedVehicle: null,
-      updatedAt: Date.now(),
-    });
+    if (trip.driverId) {
+      await User.findByIdAndUpdate(trip.driverId, {
+        status: "offDuty",
+        assignedVehicle: null,
+        updatedAt: Date.now(),
+      });
+    }
 
     res.json({
       message: "Trip cancelled successfully",

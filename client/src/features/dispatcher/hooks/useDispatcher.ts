@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { dispatcherApi, Trip, Vehicle, Driver, DashboardStats } from "../services/dispatcherApi";
 
 export function useDispatcher() {
@@ -54,10 +55,13 @@ export function useDispatcher() {
     }
   };
 
-  const completeTrip = async (tripId: string, endOdometer: number) => {
+  const queryClient = useQueryClient();
+
+  const completeTrip = async (tripId: string, endOdometer: number, fuelLiters?: number, fuelCost?: number) => {
     try {
-      const completedTrip = await dispatcherApi.completeTrip(tripId, endOdometer);
+      const completedTrip = await dispatcherApi.completeTrip(tripId, endOdometer, fuelLiters, fuelCost);
       await fetchData();
+      queryClient.invalidateQueries({ queryKey: ['analytics'] });
       return completedTrip;
     } catch (err: any) {
       throw new Error(err.response?.data?.message || err.message || "Failed to complete trip");

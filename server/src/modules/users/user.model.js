@@ -1,54 +1,61 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Name is required'],
+    required: [true, "Name is required"],
     trim: true,
   },
   email: {
     type: String,
-    required: [true, 'Email is required'],
+    required: [true, "Email is required"],
     unique: true,
     lowercase: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email'],
+    match: [
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
+      "Please provide a valid email",
+    ],
   },
   password: {
     type: String,
-    required: [true, 'Password is required'],
+    required: [true, "Password is required"],
     minlength: 6,
     select: false,
   },
   role: {
     type: String,
-    enum: ['manager', 'dispatcher', 'safety', 'finance', 'driver'],
-    default: 'driver',
+    enum: ["manager", "dispatcher", "safety", "finance", "driver"],
+    default: "driver",
   },
   assignedVehicle: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Vehicle',
+    ref: "Vehicle",
     default: null,
   },
   status: {
     type: String,
-    enum: ['onDuty', 'offDuty', 'suspended'],
-    default: 'offDuty',
+    enum: ["onDuty", "offDuty", "suspended"],
+    default: "offDuty",
   },
   licenseNumber: {
     type: String,
-    sparse: true
+    sparse: true,
   },
   licenseExpiry: {
     type: Date,
   },
   licenseCategory: {
     type: String,
-    default: 'Standard'
+    default: "Standard",
   },
   baseSalary: {
     type: Number,
-    default: 0
+    default: 0,
+  },
+  region: {
+    type: String,
+    default: "Global",
   },
   safetyScore: {
     type: Number,
@@ -58,8 +65,8 @@ const userSchema = new mongoose.Schema({
   },
   complianceStatus: {
     type: String,
-    enum: ['Active', 'Warning', 'Suspended'],
-    default: 'Active',
+    enum: ["Active", "Warning", "Suspended"],
+    default: "Active",
   },
   totalIncidents: {
     type: Number,
@@ -67,7 +74,7 @@ const userSchema = new mongoose.Schema({
   },
   suspensionReason: {
     type: String,
-    default: '',
+    default: "",
   },
   suspendedAt: {
     type: Date,
@@ -87,9 +94,9 @@ const userSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-userSchema.pre('save', async function (next) {
-  if (!this.isModified('password')) return next();
-  
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password")) return next();
+
   try {
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
@@ -109,4 +116,4 @@ userSchema.methods.isLicenseExpired = function () {
   return this.licenseExpiry < new Date();
 };
 
-module.exports = mongoose.model('User', userSchema);
+module.exports = mongoose.model("User", userSchema);

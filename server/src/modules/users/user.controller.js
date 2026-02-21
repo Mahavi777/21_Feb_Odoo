@@ -1,42 +1,46 @@
-const User = require('./user.model');
+const User = require("./user.model");
 
 // Get all users
 exports.getAllUsers = async (req, res) => {
   try {
     const filter = {};
     if (req.query.status) {
-      filter.status = { $in: req.query.status.split(',') };
+      filter.status = { $in: req.query.status.split(",") };
     }
     if (req.query.role) {
-      filter.role = { $in: req.query.role.split(',') };
+      filter.role = { $in: req.query.role.split(",") };
     }
 
-    const users = await User.find(filter).select('-password');
+    const users = await User.find(filter).select("-password");
     res.json({
-      message: 'Users fetched successfully',
+      message: "Users fetched successfully",
       count: users.length,
       data: users,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching users', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching users", error: error.message });
   }
 };
 
 // Get user by ID
 exports.getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id).select('-password');
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
-      message: 'User fetched successfully',
+      message: "User fetched successfully",
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching user', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching user", error: error.message });
   }
 };
 
@@ -54,19 +58,21 @@ exports.updateUser = async (req, res) => {
         safetyScore,
         updatedAt: Date.now(),
       },
-      { new: true, runValidators: true }
-    ).select('-password');
+      { new: true, runValidators: true },
+    ).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
-      message: 'User updated successfully',
+      message: "User updated successfully",
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating user', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating user", error: error.message });
   }
 };
 
@@ -76,33 +82,61 @@ exports.deleteUser = async (req, res) => {
     const user = await User.findByIdAndDelete(req.params.id);
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
-      message: 'User deleted successfully',
+      message: "User deleted successfully",
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting user', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error deleting user", error: error.message });
   }
 };
 
 // Get drivers (users with dispatcher role by default for this schema context)
 exports.getDrivers = async (req, res) => {
   try {
-    const filter = { role: 'driver' };
+    const filter = { role: "driver" };
+
+    // Filter by exact status (e.g. 'offDuty', 'onDuty')
     if (req.query.status) {
-      filter.status = { $in: req.query.status.split(',') };
+      filter.status = { $in: req.query.status.split(",") };
     }
-    const drivers = await User.find(filter).select('-password');
+
+    // Filter by License Category
+    if (req.query.licenseCategory) {
+      filter.licenseCategory = { $in: req.query.licenseCategory.split(",") };
+    }
+
+    // Filter by Region
+    if (req.query.region) {
+      filter.region = { $in: req.query.region.split(",") };
+    }
+
+    // Filter for Not Suspended (Excludes drivers suspended via 'status' or 'complianceStatus')
+    if (req.query.notSuspended === "true") {
+      filter.status = { ...filter.status, $ne: "suspended" };
+      filter.complianceStatus = { $ne: "Suspended" };
+    }
+
+    // Filter for Valid License (Expiry date is in the future)
+    if (req.query.validLicense === "true") {
+      filter.licenseExpiry = { $gt: new Date() };
+    }
+
+    const drivers = await User.find(filter).select("-password");
     res.json({
-      message: 'Drivers fetched successfully',
+      message: "Drivers fetched successfully",
       count: drivers.length,
       data: drivers,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching drivers', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error fetching drivers", error: error.message });
   }
 };
 
@@ -117,62 +151,85 @@ exports.updateDriverStatus = async (req, res) => {
         status,
         updatedAt: Date.now(),
       },
-      { new: true, runValidators: true }
-    ).select('-password');
+      { new: true, runValidators: true },
+    ).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     res.json({
-      message: 'Driver status updated successfully',
+      message: "Driver status updated successfully",
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating driver status', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating driver status", error: error.message });
   }
 };
 
 // Create a Driver
 exports.createDriver = async (req, res) => {
   try {
-    const { name, email, password, licenseNumber, licenseExpiry, licenseCategory, baseSalary } = req.body;
+    const {
+      name,
+      email,
+      password,
+      licenseNumber,
+      licenseExpiry,
+      licenseCategory,
+      baseSalary,
+    } = req.body;
 
     if (!licenseNumber || !licenseExpiry) {
-      return res.status(400).json({ message: 'Drivers must have a license number and expiry' });
+      return res
+        .status(400)
+        .json({ message: "Drivers must have a license number and expiry" });
     }
 
     const user = new User({
       name,
       email,
-      password: password || 'defaultpassword123',
-      role: 'driver',
-      status: 'offDuty',
+      password: password || "defaultpassword123",
+      role: "driver",
+      status: "offDuty",
       safetyScore: 100,
       licenseNumber,
       licenseExpiry,
-      licenseCategory: licenseCategory || 'Standard',
-      baseSalary: baseSalary || 0
+      licenseCategory: licenseCategory || "Standard",
+      baseSalary: baseSalary || 0,
     });
 
     await user.save();
 
     res.status(201).json({
-      message: 'Driver created successfully',
+      message: "Driver created successfully",
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating driver', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error creating driver", error: error.message });
   }
 };
 
 // Update Driver Details
 exports.updateDriverDetails = async (req, res) => {
   try {
-    const { name, email, licenseNumber, licenseExpiry, licenseCategory, baseSalary, status, safetyScore } = req.body;
+    const {
+      name,
+      email,
+      licenseNumber,
+      licenseExpiry,
+      licenseCategory,
+      baseSalary,
+      status,
+      safetyScore,
+    } = req.body;
 
     const user = await User.findOneAndUpdate(
-      { _id: req.params.id, role: 'driver' },
+      { _id: req.params.id, role: "driver" },
       {
         name,
         email,
@@ -184,18 +241,20 @@ exports.updateDriverDetails = async (req, res) => {
         safetyScore,
         updatedAt: Date.now(),
       },
-      { new: true, runValidators: true }
-    ).select('-password');
+      { new: true, runValidators: true },
+    ).select("-password");
 
     if (!user) {
-      return res.status(404).json({ message: 'Driver not found' });
+      return res.status(404).json({ message: "Driver not found" });
     }
 
     res.json({
-      message: 'Driver updated successfully',
+      message: "Driver updated successfully",
       data: user,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating driver', error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error updating driver", error: error.message });
   }
 };

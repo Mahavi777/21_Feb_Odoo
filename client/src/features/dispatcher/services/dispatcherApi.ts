@@ -40,6 +40,9 @@ export interface Trip {
   cargoWeight?: number;
   revenue?: number;
   createdAt: string;
+  updatedAt?: string;
+  fuelLiters?: number;
+  fuelCost?: number;
 }
 
 export interface DashboardStats {
@@ -84,8 +87,8 @@ export const dispatcherApi = {
     return { ...item, id: item._id };
   },
 
-  completeTrip: async (id: string, endOdometer: number): Promise<Trip> => {
-    const res = await api.patch(`/api/trips/${id}/complete`, { endOdometer });
+  completeTrip: async (id: string, endOdometer: number, fuelLiters?: number, fuelCost?: number): Promise<Trip> => {
+    const res = await api.patch(`/api/trips/${id}/complete`, { endOdometer, fuelLiters, fuelCost });
     const item = res.data.data;
     return { ...item, id: item._id };
   },

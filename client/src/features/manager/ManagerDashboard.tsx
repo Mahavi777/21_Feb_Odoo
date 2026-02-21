@@ -70,7 +70,7 @@ export default function ManagerDashboard() {
              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground border-b pb-2">Management Controls</h3>
              
              <button 
-               onClick={() => navigate('/manager/vehicles')}
+               onClick={() => navigate('/vehicles')}
                className="flex items-center gap-3 w-full rounded-xl bg-indigo-600 px-4 py-4 text-sm font-semibold text-white hover:bg-indigo-500 transition-all shadow-md shadow-indigo-500/20"
              >
                <Truck className="h-5 w-5" />
@@ -78,10 +78,10 @@ export default function ManagerDashboard() {
              </button>
 
              <div className="grid grid-cols-1 gap-2 pt-2">
-               <button onClick={() => navigate('/manager/maintenance')} className="flex items-center gap-3 w-full rounded-xl border px-4 py-3 text-sm font-medium hover:bg-muted transition-colors text-left text-muted-foreground">
+               <button onClick={() => navigate('/maintenance')} className="flex items-center gap-3 w-full rounded-xl border px-4 py-3 text-sm font-medium hover:bg-muted transition-colors text-left text-muted-foreground">
                  <AlertTriangle className="h-4 w-4" /> Log Maintenance
                </button>
-               <button onClick={() => navigate('/manager/trips')} className="flex items-center gap-3 w-full rounded-xl border px-4 py-3 text-sm font-medium hover:bg-muted transition-colors text-left text-muted-foreground">
+               <button onClick={() => navigate('/trips')} className="flex items-center gap-3 w-full rounded-xl border px-4 py-3 text-sm font-medium hover:bg-muted transition-colors text-left text-muted-foreground">
                  <Navigation className="h-4 w-4" /> Trip Oversight
                </button>
              </div>

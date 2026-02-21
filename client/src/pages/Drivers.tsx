@@ -1,6 +1,7 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { DriverManager } from "@/features/manager/DriverManager";
 import SafetyDrivers from "@/features/safety/Drivers";
+import DispatcherDrivers from "@/features/dispatcher/DispatcherDrivers";
 
 export default function Drivers() {
   const { user } = useAuth();
@@ -11,6 +12,10 @@ export default function Drivers() {
 
   if (user?.role === "safety") {
     return <SafetyDrivers />;
+  }
+
+  if (user?.role === "dispatcher") {
+    return <DispatcherDrivers />;
   }
 
   return (

@@ -23,10 +23,10 @@ const API_BASE_URL = "http://localhost:5000/api";
 
 /** Role-based menu access */
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
-  manager: ["dashboard", "vehicles", "trips", "maintenance", "analytics", "drivers"],
+  manager: ["dashboard", "finance", "vehicles", "trips", "maintenance", "analytics", "drivers", "fuel"],
   dispatcher: ["dashboard", "vehicles", "trips", "drivers"],
   safety: ["dashboard", "drivers", "maintenance"],
-  finance: ["dashboard", "analytics", "maintenance"],
+  finance: ["dashboard", "finance", "analytics", "maintenance", "fuel"],
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {

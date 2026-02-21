@@ -10,12 +10,14 @@ interface TripDrawerProps {
   vehicles: Vehicle[];
   drivers: Driver[];
   onDispatch: (tripId: string) => Promise<Trip>;
-  onComplete: (tripId: string, endOdometer: number) => Promise<Trip>;
+  onComplete: (tripId: string, endOdometer: number, fuelLiters?: number, fuelCost?: number) => Promise<Trip>;
   onCancel: (tripId: string) => Promise<Trip>;
 }
 
 export function TripDrawer({ trip, isOpen, onClose, vehicles, drivers, onDispatch, onComplete, onCancel }: TripDrawerProps) {
   const [endOdometer, setEndOdometer] = useState("");
+  const [fuelLiters, setFuelLiters] = useState("");
+  const [fuelCost, setFuelCost] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,6 +33,8 @@ export function TripDrawer({ trip, isOpen, onClose, vehicles, drivers, onDispatc
       setIsProcessing(true);
       await actionFn();
       setEndOdometer("");
+      setFuelLiters("");
+      setFuelCost("");
       onClose();
     } catch (err: any) {
       setError(err.message || "Failed to process action");
@@ -221,7 +225,31 @@ export function TripDrawer({ trip, isOpen, onClose, vehicles, drivers, onDispatc
                     className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
                   />
                 </div>
+                
                 <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold uppercase text-muted-foreground">Fuel Added (Liters)</label>
+                    <input 
+                      type="number" 
+                      value={fuelLiters}
+                      onChange={(e) => setFuelLiters(e.target.value)}
+                      placeholder="e.g. 45"
+                      className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-semibold uppercase text-muted-foreground">Fuel Cost ($)</label>
+                    <input 
+                      type="number" 
+                      value={fuelCost}
+                      onChange={(e) => setFuelCost(e.target.value)}
+                      placeholder="e.g. 120"
+                      className="w-full rounded-xl border bg-background px-4 py-2.5 text-sm outline-none transition-all focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 pt-2">
                   <button 
                     onClick={() => handleAction(() => onCancel(trip.id!))}
                     disabled={isProcessing}
@@ -235,7 +263,16 @@ export function TripDrawer({ trip, isOpen, onClose, vehicles, drivers, onDispatc
                         setError("Valid end odometer reading is required");
                         return;
                       }
-                      handleAction(() => onComplete(trip.id!, Number(endOdometer)));
+                      
+                      const fLiters = fuelLiters;
+                      const fCost = fuelCost;
+                      
+                      if ((fLiters && !fCost) || (!fLiters && fCost)) {
+                        setError("Both Fuel Liters and Fuel Cost must be provided if logging fuel");
+                        return;
+                      }
+
+                      handleAction(() => onComplete(trip.id!, Number(endOdometer), fLiters ? Number(fLiters) : undefined, fCost ? Number(fCost) : undefined));
                     }}
                     disabled={isProcessing}
                     className="w-full flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-500 transition-colors shadow-lg shadow-emerald-500/20 disabled:opacity-60"

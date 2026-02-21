@@ -10,15 +10,18 @@ import {
   BarChart3,
   Users,
   Shield,
+  Fuel,
   ChevronLeft,
   ChevronRight,
   LogOut,
+  DollarSign
 } from "lucide-react";
 
 const NAV_ITEMS = [
   { key: "dashboard", label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { key: "vehicles", label: "Vehicles", icon: Truck, path: "/vehicles" },
   { key: "trips", label: "Trips", icon: Route, path: "/trips" },
+  { key: "fuel", label: "Fuel Expenses", icon: Fuel, path: "/fuel" },
   { key: "maintenance", label: "Maintenance", icon: Wrench, path: "/maintenance" },
   { key: "drivers", label: "Drivers", icon: Users, path: "/drivers" },
   { key: "safety", label: "Safety", icon: Shield, path: "/safety" },
