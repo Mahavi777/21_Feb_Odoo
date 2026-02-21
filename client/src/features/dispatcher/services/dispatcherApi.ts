@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
@@ -53,45 +53,45 @@ export interface DashboardStats {
 
 export const dispatcherApi = {
   getDrivers: async (status?: string): Promise<Driver[]> => {
-    const res = await api.get('/api/dispatch/drivers/available');
+    const res = await api.get('/dispatch/drivers/available');
     return res.data.data.map((item: any) => ({ ...item, id: item._id }));
   },
 
   getVehicles: async (status?: string): Promise<Vehicle[]> => {
-    const res = await api.get('/api/dispatch/vehicles/available');
+    const res = await api.get('/dispatch/vehicles/available');
     return res.data.data.map((item: any) => ({ ...item, id: item._id }));
   },
 
   getTrips: async (): Promise<Trip[]> => {
-    const res = await api.get('/api/trips');
+    const res = await api.get('/trips');
     return res.data.data.map((item: any) => ({ ...item, id: item._id }));
   },
 
   getDashboard: async (): Promise<DashboardStats> => {
-    const res = await api.get('/api/dispatcher/dashboard');
+    const res = await api.get('/dispatcher/dashboard');
     return res.data.data;
   },
 
   createTrip: async (data: any): Promise<Trip> => {
-    const res = await api.post('/api/trips', data);
+    const res = await api.post('/trips', data);
     const item = res.data.data;
     return { ...item, id: item._id };
   },
 
   dispatchTrip: async (id: string): Promise<Trip> => {
-    const res = await api.patch(`/api/trips/${id}/dispatch`);
+    const res = await api.patch(`/trips/${id}/dispatch`);
     const item = res.data.data;
     return { ...item, id: item._id };
   },
 
   completeTrip: async (id: string, endOdometer: number): Promise<Trip> => {
-    const res = await api.patch(`/api/trips/${id}/complete`, { endOdometer });
+    const res = await api.patch(`/trips/${id}/complete`, { endOdometer });
     const item = res.data.data;
     return { ...item, id: item._id };
   },
 
   cancelTrip: async (id: string): Promise<Trip> => {
-    const res = await api.patch(`/api/trips/${id}/cancel`);
+    const res = await api.patch(`/trips/${id}/cancel`);
     const item = res.data.data;
     return { ...item, id: item._id };
   }
