@@ -13,6 +13,7 @@ import Trips from "@/pages/Trips";
 import Maintenance from "@/pages/Maintenance";
 import Drivers from "@/pages/Drivers";
 import Analytics from "@/pages/Analytics";
+import FinanceDashboard from "@/pages/FinanceDashboard";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,14 @@ const App = () => (
                 <Route path="/maintenance" element={<Maintenance />} />
                 <Route path="/drivers" element={<Drivers />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route
+                  path="/finance"
+                  element={
+                    <ProtectedRoute requiredRole="finance">
+                      <FinanceDashboard />
+                    </ProtectedRoute>
+                  }
+                />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
