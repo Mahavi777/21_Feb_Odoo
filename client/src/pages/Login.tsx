@@ -4,8 +4,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Truck, Loader2 } from "lucide-react";
 
 export default function Login() {
-  const [email, setEmail] = useState("manager@fleetflow.io");
-  const [password, setPassword] = useState("password");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const { login, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -21,6 +21,11 @@ export default function Login() {
     } catch (err: any) {
       setError(err.message);
     }
+  };
+
+  const loadDemoAccount = (demoEmail: string, demoPassword: string) => {
+    setEmail(demoEmail);
+    setPassword(demoPassword);
   };
 
   return (
@@ -63,15 +68,6 @@ export default function Login() {
             />
           </div>
 
-          <div className="flex items-center justify-between">
-            <label className="flex items-center gap-2 text-xs text-muted-foreground">
-              <input type="checkbox" className="rounded" /> Remember me
-            </label>
-            <button type="button" className="text-xs text-primary hover:underline">
-              Forgot password?
-            </button>
-          </div>
-
           <button
             type="submit"
             disabled={isLoading}
@@ -81,9 +77,39 @@ export default function Login() {
             {isLoading ? "Signing in..." : "Sign in"}
           </button>
 
-          <p className="text-center text-xs text-muted-foreground">
-            Demo accounts: manager@ | dispatch@ | safety@ | finance@ @fleetflow.io
-          </p>
+          <div className="space-y-2">
+            <p className="text-center text-xs font-medium text-muted-foreground">Demo Accounts</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => loadDemoAccount("manager@fleetflow.io", "password")}
+                className="rounded-lg border border-primary/20 bg-primary/5 px-2 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+              >
+                Manager
+              </button>
+              <button
+                type="button"
+                onClick={() => loadDemoAccount("dispatch@fleetflow.io", "password")}
+                className="rounded-lg border border-primary/20 bg-primary/5 px-2 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+              >
+                Dispatcher
+              </button>
+              <button
+                type="button"
+                onClick={() => loadDemoAccount("safety@fleetflow.io", "password")}
+                className="rounded-lg border border-primary/20 bg-primary/5 px-2 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+              >
+                Safety
+              </button>
+              <button
+                type="button"
+                onClick={() => loadDemoAccount("finance@fleetflow.io", "password")}
+                className="rounded-lg border border-primary/20 bg-primary/5 px-2 py-1.5 text-xs font-medium text-primary transition-colors hover:bg-primary/10"
+              >
+                Finance
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     </div>
