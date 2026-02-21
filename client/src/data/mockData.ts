@@ -40,6 +40,7 @@ export interface Driver {
   licenseExpiry: string;
   safetyScore: number;
   status: "on_duty" | "off_duty" | "suspended";
+  tripCompletionRate: number;
 }
 
 export const VEHICLES: Vehicle[] = [
@@ -69,11 +70,11 @@ export const MAINTENANCE_LOGS: MaintenanceLog[] = [
 ];
 
 export const DRIVERS: Driver[] = [
-  { id: "d1", name: "Alex Morgan", licenseExpiry: "2027-06-15", safetyScore: 92, status: "on_duty" },
-  { id: "d2", name: "Sam Rivera", licenseExpiry: "2026-09-01", safetyScore: 87, status: "on_duty" },
-  { id: "d3", name: "Jordan Lee", licenseExpiry: "2026-04-20", safetyScore: 78, status: "off_duty" },
-  { id: "d4", name: "Casey Kim", licenseExpiry: "2027-12-31", safetyScore: 95, status: "on_duty" },
-  { id: "d5", name: "Taylor Swift", licenseExpiry: "2026-02-28", safetyScore: 42, status: "suspended" },
+  { id: "d1", name: "Alex Morgan", licenseExpiry: "2027-06-15", safetyScore: 92, status: "on_duty", tripCompletionRate: 96 },
+  { id: "d2", name: "Sam Rivera", licenseExpiry: "2026-09-01", safetyScore: 87, status: "on_duty", tripCompletionRate: 88 },
+  { id: "d3", name: "Jordan Lee", licenseExpiry: "2026-04-20", safetyScore: 78, status: "off_duty", tripCompletionRate: 92 },
+  { id: "d4", name: "Casey Kim", licenseExpiry: "2027-12-31", safetyScore: 95, status: "on_duty", tripCompletionRate: 100 },
+  { id: "d5", name: "Taylor Swift", licenseExpiry: "2026-02-28", safetyScore: 42, status: "suspended", tripCompletionRate: 65 },
 ];
 
 export const MONTHLY_COSTS = [
