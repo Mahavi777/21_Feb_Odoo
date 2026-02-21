@@ -27,9 +27,7 @@ export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   dispatcher: ["dashboard", "vehicles", "trips"],
   safety: ["dashboard", "drivers", "maintenance"],
   finance: ["dashboard", "analytics", "finance"],
-  dispatcher: ["dashboard", "vehicles", "trips", "drivers"],
-  safety: ["dashboard", "drivers", "maintenance"],
-  finance: ["dashboard", "analytics", "maintenance"],
+ 
 };
 
 export function AuthProvider({ children }: { children: ReactNode }) {

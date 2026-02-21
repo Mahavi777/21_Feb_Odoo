@@ -4,12 +4,12 @@ import { useAuth } from "@/contexts/AuthContext";
 export default function Analytics() {
   const { user } = useAuth();
   
-  if (user?.role !== "manager") {
+  if (user?.role !== "manager" && user?.role !== "finance") {
     return (
       <div className="flex h-screen items-center justify-center bg-background text-muted-foreground p-6">
          <div className="text-center max-w-sm">
            <h2 className="text-xl font-bold mb-2">Restricted Access</h2>
-           <p className="text-sm">Analytics are restricted to fleet managers.</p>
+           <p className="text-sm">Analytics are restricted to authorized roles.</p>
          </div>
       </div>
     );
