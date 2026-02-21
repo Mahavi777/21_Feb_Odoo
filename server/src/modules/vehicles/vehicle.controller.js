@@ -3,7 +3,12 @@ const Vehicle = require('./vehicle.model');
 // Get all vehicles
 exports.getAllVehicles = async (req, res) => {
   try {
-    const vehicles = await Vehicle.find();
+    const filter = {};
+    if (req.query.status) {
+      filter.status = { $in: req.query.status.split(',') };
+    }
+
+    const vehicles = await Vehicle.find(filter);
     res.json({
       message: 'Vehicles fetched successfully',
       count: vehicles.length,
@@ -62,18 +67,20 @@ exports.createVehicle = async (req, res) => {
 // Update vehicle
 exports.updateVehicle = async (req, res) => {
   try {
-    const { name, model, maxCapacity, odometer, status, vehicleType, region } = req.body;
+    const { name, model, licensePlate, maxCapacity, odometer, status, vehicleType, region, acquisitionCost } = req.body;
 
     const vehicle = await Vehicle.findByIdAndUpdate(
       req.params.id,
       {
         name,
         model,
+        licensePlate,
         maxCapacity,
         odometer,
         status,
         vehicleType,
         region,
+        acquisitionCost,
         updatedAt: Date.now(),
       },
       { new: true, runValidators: true }
@@ -89,6 +96,31 @@ exports.updateVehicle = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating vehicle', error: error.message });
+  }
+};
+
+// Retire vehicle
+exports.retireVehicle = async (req, res) => {
+  try {
+    const vehicle = await Vehicle.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: 'retired',
+        updatedAt: Date.now(),
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!vehicle) {
+      return res.status(404).json({ message: 'Vehicle not found' });
+    }
+
+    res.json({
+      message: 'Vehicle retired successfully',
+      data: vehicle,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error retiring vehicle', error: error.message });
   }
 };
 
