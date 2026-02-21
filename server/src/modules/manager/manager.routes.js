@@ -1,17 +1,21 @@
-const express = require('express');
-const { getDashboardStats, getAnalytics, getVehicleAnalytics } = require('./manager.controller');
-const { verifyToken, roleGuard } = require('../../middleware/auth.middleware');
+const express = require("express");
+const {
+  getDashboardStats,
+  getAnalytics,
+  getVehicleAnalytics,
+} = require("./manager.controller");
+const { verifyToken, roleGuard } = require("../../middleware/auth.middleware");
 
 const router = express.Router();
 
 // Apply manager RBAC to all routes in this file
-router.use(verifyToken, roleGuard(['manager']));
+router.use(verifyToken, roleGuard(["manager", "safety", "finance"]));
 
 // Dashboard metrics
-router.get('/dashboard', getDashboardStats);
+router.get("/dashboard", getDashboardStats);
 
 // Analytics
-router.get('/analytics', getAnalytics);
-router.get('/analytics/vehicle/:id', getVehicleAnalytics);
+router.get("/analytics", getAnalytics);
+router.get("/analytics/vehicle/:id", getVehicleAnalytics);
 
 module.exports = router;

@@ -1,6 +1,8 @@
 import { useAuth } from "@/contexts/AuthContext";
 import DispatcherDashboard from "@/features/dispatcher/DispatcherDashboard";
 import ManagerDashboard from "@/features/manager/ManagerDashboard";
+import SafetyDashboard from "@/features/safety/SafetyDashboard";
+import FinanceDashboard from "@/features/finance/FinanceDashboard";
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -11,6 +13,14 @@ export default function Dashboard() {
 
   if (user?.role === "manager") {
     return <ManagerDashboard />;
+  }
+
+  if (user?.role === "safety") {
+    return <SafetyDashboard />;
+  }
+
+  if (user?.role === "finance") {
+    return <FinanceDashboard />;
   }
 
   return (

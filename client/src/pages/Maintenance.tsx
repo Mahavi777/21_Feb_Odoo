@@ -4,7 +4,7 @@ import { MaintenanceManager } from "@/features/manager/MaintenanceManager";
 export default function Maintenance() {
   const { user } = useAuth();
 
-  if (user?.role === "manager") {
+  if (user?.role === "manager" || user?.role === "safety" || user?.role === "finance") {
     return <MaintenanceManager />;
   }
 
@@ -12,7 +12,7 @@ export default function Maintenance() {
     <div className="flex h-screen items-center justify-center bg-background text-muted-foreground p-6">
        <div className="text-center max-w-sm">
          <h2 className="text-xl font-bold mb-2">Restricted Access</h2>
-         <p className="text-sm">Maintenance operations are restricted to fleet managers.</p>
+         <p className="text-sm">Maintenance operations are restricted to authorized personnel.</p>
        </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext";
-import DispatcherDashboard from "@/features/dispatcher/DispatcherDashboard";
 import { DriverManager } from "@/features/manager/DriverManager";
+import SafetyDrivers from "@/features/safety/Drivers";
 
 export default function Drivers() {
   const { user } = useAuth();
@@ -9,10 +9,14 @@ export default function Drivers() {
     return <DriverManager />;
   }
 
+  if (user?.role === "safety") {
+    return <SafetyDrivers />;
+  }
+
   return (
     <div className="flex flex-col items-center justify-center p-12 h-full text-center">
       <h2 className="text-xl font-bold mb-2">Restricted Area</h2>
-      <p className="text-muted-foreground">Driver Management features are restricted to Fleet Managers.</p>
+      <p className="text-muted-foreground">Driver Management features are restricted to authorized personnel.</p>
     </div>
   );
 }
