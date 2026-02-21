@@ -45,6 +45,26 @@ const userSchema = new mongoose.Schema({
     min: 0,
     max: 100,
   },
+  complianceStatus: {
+    type: String,
+    enum: ['Active', 'Warning', 'Suspended'],
+    default: 'Active',
+  },
+  totalIncidents: {
+    type: Number,
+    default: 0,
+  },
+  suspensionReason: {
+    type: String,
+    default: '',
+  },
+  suspendedAt: {
+    type: Date,
+  },
+  lastScoreUpdated: {
+    type: Date,
+    default: Date.now,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

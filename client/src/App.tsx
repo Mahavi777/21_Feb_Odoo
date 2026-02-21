@@ -12,6 +12,9 @@ import Vehicles from "@/pages/Vehicles";
 import Trips from "@/pages/Trips";
 import Maintenance from "@/pages/Maintenance";
 import Drivers from "@/pages/Drivers";
+import SafetyDashboard from "@/features/safety/SafetyDashboard";
+import SafetyDrivers from "@/features/safety/Drivers";
+import Incidents from "@/features/safety/Incidents";
 import Analytics from "@/pages/Analytics";
 import FinanceDashboard from "@/pages/FinanceDashboard";
 import NotFound from "@/pages/NotFound";
@@ -34,6 +37,9 @@ const App = () => (
                 <Route path="/trips" element={<Trips />} />
                 <Route path="/maintenance" element={<Maintenance />} />
                 <Route path="/drivers" element={<Drivers />} />
+                <Route path="/safety" element={<SafetyDashboard />} />
+                <Route path="/safety/drivers" element={<SafetyDrivers />} />
+                <Route path="/safety/incidents" element={<Incidents />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route
                   path="/finance"

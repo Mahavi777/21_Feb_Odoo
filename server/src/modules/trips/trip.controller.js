@@ -13,11 +13,13 @@ exports.createTrip = async (req, res) => {
       return res.status(404).json({ message: 'Driver not found' });
     }
 
-    if (driver.status === 'suspended') {
-      return res.status(403).json({ message: 'Cannot assign trip. Driver is suspended.' });
+    // Block assignment if driver's complianceStatus is not Active
+    if (driver.complianceStatus && driver.complianceStatus !== 'Active') {
+      return res.status(403).json({ message: `Cannot assign trip. Driver compliance status: ${driver.complianceStatus}.` });
     }
 
-    if (driver.isLicenseExpired()) {
+    // Block if license expired
+    if (driver.licenseExpiry && new Date(driver.licenseExpiry) < new Date()) {
       return res.status(403).json({ message: 'Cannot assign trip. Driver license has expired.' });
     }
 
