@@ -9,6 +9,7 @@ import {
   Wrench,
   BarChart3,
   Users,
+  Shield,
   ChevronLeft,
   ChevronRight,
   LogOut,
@@ -20,6 +21,7 @@ const NAV_ITEMS = [
   { key: "trips", label: "Trips", icon: Route, path: "/trips" },
   { key: "maintenance", label: "Maintenance", icon: Wrench, path: "/maintenance" },
   { key: "drivers", label: "Drivers", icon: Users, path: "/drivers" },
+  { key: "safety", label: "Safety", icon: Shield, path: "/safety" },
   { key: "analytics", label: "Analytics", icon: BarChart3, path: "/analytics" },
 ];
 
