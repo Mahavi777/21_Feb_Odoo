@@ -28,7 +28,7 @@ export default function AppSidebar() {
   const { user, logout } = useAuth();
   const location = useLocation();
 
-  const allowedKeys = user ? ROLE_PERMISSIONS[user.role] : [];
+  const allowedKeys = user && ROLE_PERMISSIONS[user.role] ? ROLE_PERMISSIONS[user.role] : [];
   const visibleItems = NAV_ITEMS.filter((item) => allowedKeys.includes(item.key));
 
   return (

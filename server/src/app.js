@@ -1,5 +1,6 @@
 // Express app configuration
 const express = require('express');
+const cors = require('cors');
 const authRoutes = require('./modules/auth/auth.routes');
 const userRoutes = require('./modules/users/user.routes');
 const vehicleRoutes = require('./modules/vehicles/vehicle.routes');
@@ -9,6 +10,14 @@ const fuelRoutes = require('./modules/fuel/fuel.routes');
 const analyticsRoutes = require('./modules/analytics/analytics.routes');
 
 const app = express();
+
+// CORS Configuration
+app.use(cors({
+  origin: '*',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Middleware
 app.use(express.json());
