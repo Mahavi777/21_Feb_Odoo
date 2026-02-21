@@ -25,7 +25,7 @@ const API_BASE_URL = "http://localhost:5000/api";
 export const ROLE_PERMISSIONS: Record<UserRole, string[]> = {
   manager: ["dashboard", "vehicles", "trips", "maintenance", "analytics", "drivers"],
   dispatcher: ["dashboard", "vehicles", "trips"],
-  safety: ["dashboard", "drivers", "maintenance"],
+  safety: ["dashboard", "safety", "drivers"],
   finance: ["dashboard", "analytics", "maintenance"],
 };
 

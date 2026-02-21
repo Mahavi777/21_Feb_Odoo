@@ -8,6 +8,7 @@ const tripRoutes = require('./modules/trips/trip.routes');
 const maintenanceRoutes = require('./modules/maintenance/maintenance.routes');
 const fuelRoutes = require('./modules/fuel/fuel.routes');
 const analyticsRoutes = require('./modules/analytics/analytics.routes');
+const safetyRoutes = require('./modules/safety/safety.routes');
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use('/api/trips', tripRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/fuel', fuelRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/safety', safetyRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
