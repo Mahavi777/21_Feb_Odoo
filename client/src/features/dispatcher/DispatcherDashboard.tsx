@@ -116,7 +116,18 @@ export default function DispatcherDashboard() {
                 <BarChart data={stats?.vehicleAvailabilityBreakdown || []}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
                   <XAxis dataKey="status" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
-                  <Bar dataKey="count" radius={[4, 4, 0, 0]} />
+                  <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+                    {
+                      (stats?.vehicleAvailabilityBreakdown || []).map((entry, index) => {
+                        const colorMap: Record<string, string> = {
+                          'Available': 'hsl(150, 70%, 40%)',
+                          'On Trip': 'hsl(230, 80%, 65%)',
+                          'Maintenance': 'hsl(0, 80%, 55%)'
+                        };
+                        return <Cell key={`cell-${index}`} fill={colorMap[entry.status] || 'hsl(220, 13%, 50%)'} />;
+                      })
+                    }
+                  </Bar>
                   <Tooltip cursor={{ fill: "hsl(var(--muted))" }} />
                 </BarChart>
               </ResponsiveContainer>

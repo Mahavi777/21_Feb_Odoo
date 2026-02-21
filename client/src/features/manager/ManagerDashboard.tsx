@@ -28,7 +28,7 @@ export default function ManagerDashboard() {
 
   const {
     globalROI = 0,
-    maintenanceTrend = []
+    monthlyCostTrend = []
   } = analytics || {};
 
   const fleetStatusData = [
@@ -38,7 +38,7 @@ export default function ManagerDashboard() {
   ].filter(d => d.value > 0);
 
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const formattedTrendData = maintenanceTrend.map((m: any) => ({
+  const formattedTrendData = monthlyCostTrend.map((m: any) => ({
     name: monthNames[m.month - 1] || m.month,
     cost: m.cost
   }));
