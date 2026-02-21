@@ -3,7 +3,15 @@ const User = require('./user.model');
 // Get all users
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select('-password');
+    const filter = {};
+    if (req.query.status) {
+      filter.status = { $in: req.query.status.split(',') };
+    }
+    if (req.query.role) {
+      filter.role = { $in: req.query.role.split(',') };
+    }
+
+    const users = await User.find(filter).select('-password');
     res.json({
       message: 'Users fetched successfully',
       count: users.length,
@@ -80,10 +88,14 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// Get drivers (users with dispatcher role)
+// Get drivers (users with dispatcher role by default for this schema context)
 exports.getDrivers = async (req, res) => {
   try {
-    const drivers = await User.find({ role: 'dispatcher' }).select('-password');
+    const filter = { role: 'driver' };
+    if (req.query.status) {
+      filter.status = { $in: req.query.status.split(',') };
+    }
+    const drivers = await User.find(filter).select('-password');
     res.json({
       message: 'Drivers fetched successfully',
       count: drivers.length,
@@ -118,5 +130,72 @@ exports.updateDriverStatus = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ message: 'Error updating driver status', error: error.message });
+  }
+};
+
+// Create a Driver
+exports.createDriver = async (req, res) => {
+  try {
+    const { name, email, password, licenseNumber, licenseExpiry, licenseCategory, baseSalary } = req.body;
+
+    if (!licenseNumber || !licenseExpiry) {
+      return res.status(400).json({ message: 'Drivers must have a license number and expiry' });
+    }
+
+    const user = new User({
+      name,
+      email,
+      password: password || 'defaultpassword123',
+      role: 'driver',
+      status: 'offDuty',
+      safetyScore: 100,
+      licenseNumber,
+      licenseExpiry,
+      licenseCategory: licenseCategory || 'Standard',
+      baseSalary: baseSalary || 0
+    });
+
+    await user.save();
+
+    res.status(201).json({
+      message: 'Driver created successfully',
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating driver', error: error.message });
+  }
+};
+
+// Update Driver Details
+exports.updateDriverDetails = async (req, res) => {
+  try {
+    const { name, email, licenseNumber, licenseExpiry, licenseCategory, baseSalary, status, safetyScore } = req.body;
+
+    const user = await User.findOneAndUpdate(
+      { _id: req.params.id, role: 'driver' },
+      {
+        name,
+        email,
+        licenseNumber,
+        licenseExpiry,
+        licenseCategory,
+        baseSalary,
+        status,
+        safetyScore,
+        updatedAt: Date.now(),
+      },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'Driver not found' });
+    }
+
+    res.json({
+      message: 'Driver updated successfully',
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating driver', error: error.message });
   }
 };

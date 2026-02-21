@@ -13,7 +13,10 @@ router.get('/:id', verifyToken, vehicleController.getVehicleById);
 router.post('/', verifyToken, roleGuard(['manager']), vehicleController.createVehicle);
 
 // Update vehicle (Manager only)
-router.put('/:id', verifyToken, roleGuard(['manager']), vehicleController.updateVehicle);
+router.patch('/:id', verifyToken, roleGuard(['manager']), vehicleController.updateVehicle);
+
+// Retire vehicle (Manager only)
+router.patch('/:id/retire', verifyToken, roleGuard(['manager']), vehicleController.retireVehicle);
 
 // Delete vehicle (Manager only)
 router.delete('/:id', verifyToken, roleGuard(['manager']), vehicleController.deleteVehicle);

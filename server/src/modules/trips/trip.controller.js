@@ -17,6 +17,10 @@ exports.createTrip = async (req, res) => {
       return res.status(403).json({ message: 'Cannot assign trip. Driver is suspended.' });
     }
 
+    if (driver.status !== 'offDuty') {
+      return res.status(403).json({ message: 'Cannot assign trip. Driver is currently not off-duty.' });
+    }
+
     if (driver.isLicenseExpired()) {
       return res.status(403).json({ message: 'Cannot assign trip. Driver license has expired.' });
     }
@@ -40,10 +44,20 @@ exports.createTrip = async (req, res) => {
       cargoWeight,
       startOdometer,
       revenue,
-      status: 'draft',
+      status: 'dispatched',
     });
 
     await trip.save();
+
+    // Update vehicle to onTrip
+    await Vehicle.findByIdAndUpdate(vehicleId, { status: 'onTrip', updatedAt: Date.now() });
+
+    // Update driver to onDuty and bound to vehicle
+    await User.findByIdAndUpdate(driverId, { 
+      status: 'onDuty', 
+      assignedVehicle: vehicleId,
+      updatedAt: Date.now() 
+    });
 
     res.status(201).json({
       message: 'Trip created successfully',
@@ -57,7 +71,12 @@ exports.createTrip = async (req, res) => {
 // Get all trips
 exports.getAllTrips = async (req, res) => {
   try {
-    const trips = await Trip.find()
+    const filter = {};
+    if (req.query.status) {
+      filter.status = { $in: req.query.status.split(',') };
+    }
+
+    const trips = await Trip.find(filter)
       .populate('vehicleId', 'name licensePlate')
       .populate('driverId', 'name email');
 
@@ -115,6 +134,12 @@ exports.dispatchTrip = async (req, res) => {
     trip.updatedAt = Date.now();
     await trip.save();
 
+    // Update driver to onDuty
+    await User.findByIdAndUpdate(
+      trip.driverId,
+      { status: 'onDuty', assignedVehicle: trip.vehicleId, updatedAt: Date.now() }
+    );
+
     res.json({
       message: 'Trip dispatched successfully',
       data: trip,
@@ -152,6 +177,12 @@ exports.completeTrip = async (req, res) => {
       { new: true }
     );
 
+    // Update driver to offDuty
+    await User.findByIdAndUpdate(
+      trip.driverId,
+      { status: 'offDuty', assignedVehicle: null, updatedAt: Date.now() }
+    );
+
     res.json({
       message: 'Trip completed successfully',
       data: trip,
@@ -186,6 +217,12 @@ exports.cancelTrip = async (req, res) => {
     trip.status = 'cancelled';
     trip.updatedAt = Date.now();
     await trip.save();
+
+    // Update driver to offDuty
+    await User.findByIdAndUpdate(
+      trip.driverId,
+      { status: 'offDuty', assignedVehicle: null, updatedAt: Date.now() }
+    );
 
     res.json({
       message: 'Trip cancelled successfully',

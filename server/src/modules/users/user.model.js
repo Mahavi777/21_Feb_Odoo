@@ -22,8 +22,13 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['manager', 'dispatcher', 'safety', 'finance'],
-    default: 'dispatcher',
+    enum: ['manager', 'dispatcher', 'safety', 'finance', 'driver'],
+    default: 'driver',
+  },
+  assignedVehicle: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Vehicle',
+    default: null,
   },
   status: {
     type: String,
@@ -32,12 +37,18 @@ const userSchema = new mongoose.Schema({
   },
   licenseNumber: {
     type: String,
-    required: [true, 'License number is required'],
-    unique: true,
+    sparse: true
   },
   licenseExpiry: {
     type: Date,
-    required: [true, 'License expiry date is required'],
+  },
+  licenseCategory: {
+    type: String,
+    default: 'Standard'
+  },
+  baseSalary: {
+    type: Number,
+    default: 0
   },
   safetyScore: {
     type: Number,
